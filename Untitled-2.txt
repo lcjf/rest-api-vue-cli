@@ -1,0 +1,4 @@
+click
+runs function filteredPosts
+returns posts passing post as a paramater
+need to make it check for every instance of post.category's child object
