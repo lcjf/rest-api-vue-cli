@@ -76,7 +76,7 @@ export default {
         }
     },
     mounted() {
-        this.$http.get('http://rest-api-vue-cli-backend.dev/wp-json/wp/v2/posts?per_page=20').then(response => {
+        this.$http.get('http://restapi.li1.home-trial.com/wp-json/wp/v2/posts?per_page=20').then(response => {
             this.posts = response.body
         }, response => {
             // error callback

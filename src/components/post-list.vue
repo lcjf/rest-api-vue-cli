@@ -15,7 +15,7 @@
                 <div class="filter">
                     <h4 class="small-heading">Filter by Category</h4>
                     <div class="radio-wrap">
-                        <input type="radio" value="" v-model="categoryFilter">
+                        <input id="cat-all" type="radio" value="" v-model="categoryFilter">
                         <label>All</label>
                     </div>
                     <div class="radio-wrap" v-for="category in categories" v-if="category.name != 'Uncategorised'">
@@ -75,7 +75,7 @@ export default {
         }
     },
     created() {
-        this.$http.get('http://rest-api-vue-cli-backend.dev/wp-json/wp/v2/posts?per_page=20').then(response => {
+        this.$http.get('http://restapi.li1.home-trial.com/wp-json/wp/v2/posts?per_page=20').then(response => {
             this.posts = response.body
         }, response => {
             // error callback
@@ -88,7 +88,7 @@ export default {
     },
     methods: {
         getThePost(id) {
-            console.log('id', id)
+            // console.log('id', id)
             var posts = this.posts
             this.show = true
             function filterPosts(el) {
@@ -114,12 +114,20 @@ export default {
     computed: {
         filteredPosts: function () {
             return this.posts.filter((post) => {
-                // var that = this.nameFilter
-                // var toLower = new RegExp(that, 'i')
-                // return post.title.rendered.match(toLower)
-                return post.categories[0] === 7
+                const toLower = new RegExp(this.nameFilter, 'i')
+                const postsInCats = post.categories.indexOf(this.categoryFilter) >= 0
+                if (postsInCats) {
+                    console.log(this.categoryFilter)
+                    return post.title.rendered.match(toLower)
+                } else if (this.categoryFilter === '') {
+                    return post.title.rendered.match(toLower)
+                }
             })
         }
+        // filteredCats: function () {
+        //     return this.posts.filter((post) => {
+        //     })
+        // }
     }
     // computed: {
     // <article v-for="post in posts | filterBy nameFilter in 'title' | filterBy categoryFilter in 'categories'" class="post">
