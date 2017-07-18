@@ -15,11 +15,11 @@
                 <div class="filter">
                     <h4 class="small-heading">Filter by Category</h4>
                     <div class="radio-wrap">
-                        <input id="cat-all" type="radio" value="" v-model="categoryFilter">
+                        <input type="radio" value="" v-model="categoryFilter">
                         <label>All</label>
                     </div>
                     <div class="radio-wrap" v-for="category in categories" v-if="category.name != 'Uncategorised'">
-                        <input type="radio" v-bind:value="category.id" v-model="categoryFilter">
+                        <input type="checkbox" v-bind:value="category.id" v-model="categoryFilter">
                         <label>{{ category.name }}</label>
                     </div>
                 </div>
@@ -117,7 +117,6 @@ export default {
                 const toLower = new RegExp(this.nameFilter, 'i')
                 const postsInCats = post.categories.indexOf(this.categoryFilter) >= 0
                 if (postsInCats) {
-                    console.log(this.categoryFilter)
                     return post.title.rendered.match(toLower)
                 } else if (this.categoryFilter === '') {
                     return post.title.rendered.match(toLower)

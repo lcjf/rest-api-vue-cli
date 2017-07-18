@@ -19,20 +19,19 @@
                         <label>All</label>
                     </div>
                     <div class="radio-wrap" v-for="category in categories" v-if="category.name != 'Uncategorised'">
-                        <input type="radio" v-bind:value="category.id" v-model="categoryFilter">
+                        <input type="checkbox" v-bind:value="category.id" v-model="categoryFilter">
                         <label>{{ category.name }}</label>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Show Filters Button //-->
+        <!-- Filters Button //-->
         <div class="container pad filter-revealer">
             <a href="#" class="btn orange-btn" v-on:click="filterVisibility" v-bind:class="{ 'filter-active': filterActive }">{{ filterActive ? 'Close Filters' : 'Open Filters' }}</a>
         </div>
         <!-- Posts //-->
-        <!--<article v-for="post in posts | filterBy nameFilter in 'title' | filterBy categoryFilter in 'categories'" class="post">-->
         <div class="container post-list">
-            <article v-for="post in posts" class="post">
+            <article v-for="post in filteredPosts" class="post">
                 <a v-on:click="getThePost(post.id)">
                     <img v-bind:src="post.fi_300xx180" alt="">
                 </a>
@@ -66,16 +65,16 @@ export default {
     name: 'PostList',
     data() {
         return {
-            posts: '',
+            posts: [],
+            post: '',
             nameFilter: '',
             categoryFilter: '',
-            categories: '',
+            categories: [],
             filterActive: false,
-            post: '',
             show: false
         }
     },
-    mounted() {
+    created() {
         this.$http.get('http://restapi.li1.home-trial.com/wp-json/wp/v2/posts?per_page=20').then(response => {
             this.posts = response.body
         }, response => {
@@ -89,26 +88,40 @@ export default {
     },
     methods: {
         getThePost(id) {
-            console.log('id', id)
+            // console.log('id', id)
             var posts = this.posts
-
-            this.$set('show', true)
-
+            this.show = true
             function filterPosts(el) {
                 return el.id === id
             }
-
-            this.$set('post', posts.filter(filterPosts))
+            this.post = posts.filter(filterPosts)
+            // return this.posts.filter((post) => {
+            //     console.log(post.title.rendered.match(this.nameFilter))
+            //     return post.title.rendered.match(this.nameFilter)
+            // })
         },
         filterVisibility() {
             if (this.filterActive) {
-                this.$set('filterActive', false)
+                this.filterActive = false
             } else {
-                this.$set('filterActive', true)
+                this.filterActive = true
             }
         },
         closePost() {
-            this.$set('show', false)
+            this.show = false
+        }
+    },
+    computed: {
+        filteredPosts: function () {
+            return this.posts.filter((post) => {
+                const toLower = new RegExp(this.nameFilter, 'i')
+                const postsInCats = post.categories.indexOf(this.categoryFilter) >= 0
+                if (postsInCats) {
+                    return post.title.rendered.match(toLower)
+                } else if (this.categoryFilter === '') {
+                    return post.title.rendered.match(toLower)
+                }
+            })
         }
     }
 }
